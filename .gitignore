@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# Build artifacts
+*.log
+*.tmp
+build/
+dist/
+
+# Large temporary files
+*.tar.gz
+*.zip

@@ -1,0 +1,41 @@
+{
+    "_SDC_FILE_PATH": "constraint.sdc",
+    "_SDC_CLK_PERIOD": {
+        "type": "float",
+        "minmax": [100.0, 500.0],
+        "step": 20
+    },
+    "CORE_UTILIZATION": {
+        "type": "int",
+        "minmax": [5, 70],
+        "step": 5
+    },
+    "SYNTH_HIERARCHICAL": {
+        "type": "int",
+        "minmax": [0,1],
+        "step": 1
+    },
+    "CORE_ASPECT_RATIO": {
+        "type": "float",
+        "minmax": [0.5, 2.0],
+        "step": 0.1
+    },
+    "CORE_MARGIN": {
+        "type": "int",
+        "minmax": [1, 10],
+        "step": 1
+    },
+    "PLACE_DENSITY_LB_ADDON": {
+        "type": "float",
+        "minmax": [0.0, 1.0],
+        "step": 0.1
+    },
+    "PLACE_DENSITY": {
+        "type": "float",
+        "minmax": [0.1, 0.9],
+        "step": 0.1
+    },
+    "_FR_FILE_PATH": "../../../platforms/sky130hd/fastroute.tcl"
+}
+
+

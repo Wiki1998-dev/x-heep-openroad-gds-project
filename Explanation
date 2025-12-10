@@ -1,0 +1,85 @@
+This repository contains the implementation and optimization framework for the X-HEEP (eXtendable Heterogeneous Energy-Efficient Platform) RISC-V microcontroller using the OpenROAD automated flow.
+The primary goal of this project is to establish a "no-human-in-the-loop" RTL-to-GDSII flow that optimizes the design for Power, Performance, and Area (PPA). By leveraging the AutoTuner framework, we explore high-dimensional parameter spaces (over 125 parameters) to identify optimal design configurations for the SkyWater 130nm (SKY130) process node.
+Key Objectives
+Full Implementation: Generate a manufacturable GDSII layout for X-HEEP using OpenROAD.
+Design Exploration: Systematically evaluate over 125 configurable parameters (core utilization, aspect ratio, clock period, etc.).
+Hyperparameter Optimization: Utilize algorithms like HyperOpt and Optuna to maximize PPA.
+Pareto Analysis: Identify trade-offs and find the optimal operating point on the Pareto frontier.
+Technology Stack & Architecture
+The Design: X-HEEP
+X-HEEP is a modular, open-source RISC-V microcontroller designed for edge computing.
+Core: CV32E40P (RISC-V).
+Features: Integrated memory banks, peripheral subsystems (SPI, I2C, GPIO, UART), and extendable interfaces (CV-X-IF).
+PDK: SkyWater 130nm (open-source).
+The Toolchain: OpenROAD
+We utilize the OpenROAD application to handle the physical design flow:
+Synthesis: Yosys (RTL to Gate-level netlist).
+Floorplanning: TritonFPlan (Macro placement, PDN generation).
+Placement: Global and Detailed placement (RePlAce).
+CTS: Clock Tree Synthesis.
+Routing: Global and Detailed routing.
+Signoff: OpenSTA (Timing) and Magic/KLayout (DRC/LVS).
+The Optimizer: AutoTuner
+AutoTuner is a Python-based hyperparameter optimization tool integrated into the flow using the Ray/Tune framework. It interfaces with METRICS2.1 to capture design data.
+Algorithms supported: HyperOpt (Tree Parzen Estimator), AxSearch (Bayesian), Optuna, Nevergrad, and Random Search.
+Methodology
+The optimization process moves away from manual tuning by automating parameter selection.
+1. Design Setup
+The X-HEEP SystemVerilog RTL is prepared alongside the SKY130 libraries. A search space is defined for parameters such as:
+Core utilization
+Aspect Ratio
+Clock constraints
+Routing congestion thresholds
+Buffer insertion strategies
+2. AutoTuner Workflow
+The flow operates in two modes:
+Sweep Mode: Brute-force evaluation of parameter sets.
+Tuning Mode: Intelligent search using optimization algorithms to converge on the best PPA.
+3. Scoring Function
+The designs are evaluated based on a weighted sum of improvements. 
+Score=(C power×Power)+(C perform ×ClockPeriod)+(C area ×Area)
+Results
+We performed a hyperparameter sweep over 2,700 configurations. The AutoTuner successfully identified parameter sets that outperformed manual (user-initialized) configurations.
+Performance Highlights
+Power Reduction: The automated approach achieved up to a 15% reduction in total power compared to manual tuning while maintaining timing closure.
+Manufacturability: Improved placement density resulting in reduced routing congestion.
+Optimization Strategies & Coefficients
+We derived three distinct optimal configurations based on specific design goals:
+area performance power
+​
+ 
+Focus
+Performance	100	10,000	100	Minimizing clock period.
+Power	10,000	100	100	Minimizing leakage and switching activity.
+Area	100	100	10,000	Minimizing silicon footprint/whitespace.
+Pareto Analysis
+The 3D Pareto analysis (Clock Period vs. Total Power vs. Utilization) revealed:
+Designs with the lowest clock periods generally exhibited higher power consumption due to increased switching activity.
+Extreme power optimization often resulted in slightly larger area usage due to the insertion of specific low-power cells and buffers to control leakage.
+🖼️ Gallery
+(Note: Add the images from the report into an images/ folder in your repo)
+Description	Visualization
+GDSII Layout<br>Final placed and routed X-HEEP design showing standard cells and power network.	![GDSII Layout](images/gdsii_layout.png)
+Parallel Coordinate Plot<br>Comparison of AutoTune predictions vs. User-Initialized parameters.	![Parallel Plot](images/parallel_plot.png)
+Pareto Front<br>3D analysis of Trade-offs between Power, Performance, and Area.	![Pareto Graph](images/pareto_graph.png)
+ Usage
+Prerequisites
+Linux Environment (Ubuntu 20.04+ recommended)
+OpenROAD Flow installed
+Python 3.8+ with ray, hyperopt, and optuna installed
+Running the AutoTuner
+To start a tuning session for X-HEEP:
+code
+Bash
+# Example command to run the tuning script
+python3 autotuner/main.py \
+  --design x_heep \
+  --platform sky130hd \
+  --algorithm hyperopt \
+  --trials 100
+Viewing Results
+Metrics are logged via METRICS2.1. You can view the output logs or visualize the convergence plots generated in the results/ directory.
+ References
+X-HEEP Project: [Link to X-HEEP Repo]
+OpenROAD Project: https://theopenroadproject.org/
+SkyWater PDK: https://github.com/google/skywater-pdk
